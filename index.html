@@ -1,40 +1,253 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+  <title>reveal.js</title>
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+  <link rel="stylesheet" href="dist/reset.css">
+  <link rel="stylesheet" href="dist/reveal.css">
+  <link rel="stylesheet" href="dist/theme/black.css">
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <p>Database Technologies: SQL vs. NoSQL</p>
+        <ul>
+          <li class="fragment">Database technology overview</li>
+          <li class="fragment">SQL vs NoSQL</li>
+          <li class="fragment">How apps store data</li>
+        </ul>
+      </section>
+      <section>
+        <p>Why we need databases</p>
+        <ul>
+          <li class="fragment">Apps need memory to store data</li>
+          <li class="fragment">Persistant data storage is required</li>
+          <li class="fragment">Fast, safe, organized</li>
+        </ul>
+      </section>
+      <section>
+        <p>SQL</p>
+        <p style="font-size: 24px;">Relational DB - stores data in structured tables with rows and columns, and
+          relationships are enforced using
+          keys.</p>
+        <ul>
+          <li class="fragment">+ Relational DB = Structured DB</li>
+          <li class="fragment">+ Fixed schema - tables, rows, columns</li>
+          <li class="fragment">- Hard to scale</li>
+        </ul>
+      </section>
+      <section>
+        <p>NoSQL</p>
+        <p style="font-size: 24px;">Non-relational DB - stores data in flexible formats like documents, key-value pairs,
+          or
+          graphs, without strict table relationships.</p>
+        <ul>
+          <li class="fragment">+ Non-relational DB = flexible and scalable</li>
+          <li class="fragment">+ No strict schema = scalable and can handle unstructured data</li>
+          <li class="fragment">- Weaker consistence</li>
+        </ul>
+      </section>
+      <section>
+        <p>SQL vs NoSQL</p>
+        <div class="r-hstack" style="gap: 80px;">
+          <div>
+            <p>SQL</p>
+            <ul>
+              <li>Structure</li>
+              <li>Consistency</li>
+              <li>Precision</li>
+              <li>Best for structured business data (login data, payments, etc)</li>
+            </ul>
+          </div>
+          <div>
+            <p>NoSQL</p>
+            <ul>
+              <li>Flexibility</li>
+              <li>Scalability</li>
+              <li>Speed</li>
+              <li>Best for rapidly changing data (user-generated contenct, chat messages, logs, etc)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section>
+        <p>SQL (PostgreSQL) example</p>
+
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-sql">
+import { Pool } from 'pg';
+
+const pool = new Pool({
+  host: 'localhost',
+  user: 'postgres',
+  password: 'yourpassword',
+  database: 'myapp',
+  port: 5432,
+});
+
+export const db = pool;
+
+async function createUsersTable() {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL
+    `);
+  )
+}
+  </code></pre>
+
+
+        </code></pre>
+      </section>
+      <section>
+        <p>SQL (PostgreSQL) example</p>
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-sql">
+async function addUser(email: string, name: string) {
+  const result = await db.query(
+    'INSERT INTO users (email, name) VALUES ($1, $2)',
+    [email, name]
+  );
+}
+
+addUser('alice@example.com', 'Alice').catch(console.error);
+  </code></pre>
+
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-sql">
+async function getUsers() {
+  const result = await db.query(
+    'SELECT id, email, name FROM users'
+    );
+  return result;
+}
+
+getUsers().catch(console.error);
+  </code></pre>
+      </section>
+      <section>
+        <p>SQL Top commands</p>
+
+        <pre style="font-size: 14px;"><code class="language-sql">
+-- Select all columns
+SELECT * FROM users;
+
+-- Filter rows
+SELECT * FROM users WHERE name = 'Alice';
+
+-- Limit number of rows
+SELECT * FROM users LIMIT 5;
+
+-- Sort results ascending / descending
+SELECT * FROM users ORDER BY name ASC;
+SELECT * FROM users ORDER BY name DESC;
+
+-- Update rows
+UPDATE users SET name = 'Bob' WHERE id = 1;
+
+-- Insert new row
+INSERT INTO users (name, email) VALUES ('Charlie', 'charlie@example.com');
+
+-- Delete rows
+DELETE FROM users WHERE id = 2;
+  </code></pre>
+      </section>
+      <section>
+        <p>NoSQL (MongoDB) example</p>
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-js">
+import { MongoClient } from 'mongodb';
+
+const client = new MongoClient(process.env.MONGO_URL!);
+await client.connect();
+
+const db = client.db('myapp');
+const users = db.collection('users');
+  </code></pre>
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-js">
+async function addUser(email: string, name: string) {
+  await users.insertOne({
+    email: email,
+    name: name,
+    createdAt: new Date(),
+  });
+}
+
+addUser('alice@example.com', 'Alice').catch(console.error);
+  </code></pre>
+        <pre class="fragment" style="max-height: 300px; font-size: 14px;"><code class="language-js">
+async function getUsers() {
+  const allUsers = await users.find().toArray();
+  return allUsers;
+}
+
+getUsers().then(console.log).catch(console.error);
+  </code></pre>
+      </section>
+      <section>
+        <p>NoSQL Top Commands (MongoDB)</p>
+
+        <pre style="height: 500px; font-size: 14px;"><code class="language-js">
+// Select all documents
+db.users.find();
+
+// Filter documents by field
+db.users.find({ name: 'Alice' });
+
+// Limit number of results
+db.users.find().limit(5);
+
+// Sort results ascending / descending
+db.users.find().sort({ name: 1 });  // ASC
+db.users.find().sort({ name: -1 }); // DESC
+
+// Update documents
+db.users.updateOne(
+  { _id: ObjectId("...") },
+  { $set: { name: 'Bob' } }
+);
+
+// Insert new document
+db.users.insertOne({ name: 'Charlie', email: 'charlie@example.com' });
+
+// Delete documents
+db.users.deleteOne({ _id: ObjectId("...") });
+  </code></pre>
+      </section>
+
+      <section>
+        <p>Combining SQL and NoSQL</p>
+        <ul>
+          <li class="fragment">Both used at the same time in large systems</li>
+          <li class="fragment">Right tool for specific task</li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+  </script>
+</body>
+
 </html>
